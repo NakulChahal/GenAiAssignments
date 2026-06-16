@@ -1,45 +1,3 @@
-```
-Coffee Sales Data Visualization
-Project Overview
-
-This project analyzes coffee shop sales data using Python, Pandas, and Matplotlib. Various visualization techniques are used to understand sales patterns, customer preferences, and revenue distribution across different coffee types.
-
-Visualizations Included
-Line/Bar Plot – Number of orders by coffee type
-Scatter Plot – Total sales by coffee type
-Bar Charts – Vertical and horizontal sales comparisons
-Multiple Bar Plot – Coffee sales comparison by year
-Stacked Bar Chart – Revenue contribution by coffee type across years
-Histogram – Distribution of sales amounts
-Pie Chart – Revenue share by coffee type
-
-
-Dataset
-
-The project uses a CSV file named:
-
-sales.csv
-
-Expected columns:
-
-Column Name	Description
-date	Order date
-datetime	Order timestamp
-cash_type	Payment method
-card	Customer card ID
-money	Sale amount
-coffee_name	Coffee type
-
-Requirements
-
-Install the required Python libraries:
-
-pip install pandas matplotlib
-
-Run Jupyter Notebook
-jupyter notebook
-```
-
 ## Task 1:Line plot
 
 
@@ -50,16 +8,24 @@ import matplotlib.pyplot as plt
 
 
 ```python
-sales=pd.read_csv('sales.csv') # read csv file
-sales=pd.DataFrame(sales) # change into datafram
-sales.head()
-#sales.describe()
-order_count = sales['coffee_name'].value_counts() # count by name
+sales = pd.read_csv('sales.csv')
 
-order_count.plot(kind='bar')
-plt.title('Number of Orders by Coffee Type')
-plt.xlabel('Coffee Name')
-plt.ylabel('Orders')
+# Convert date column to datetime
+sales['date'] = pd.to_datetime(sales['date'])
+
+# Extract month name
+sales['month'] = sales['date'].dt.strftime('%b')
+
+# Calculate total sales per month
+monthly_sales = sales.groupby('month')['money'].sum()
+
+# Line Plot
+monthly_sales.plot(kind='line', marker='o')
+
+plt.title('Sales Trend Over Months')
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.grid(True)
 plt.show()
 ```
 
@@ -175,12 +141,12 @@ plt.show()
     3 2024-03-01  2024-03-01 13:46:33.006      card  ANON-0000-0000-0003   28.9   
     4 2024-03-01  2024-03-01 13:48:14.626      card  ANON-0000-0000-0004   38.7   
     
-         coffee_name  year  
-    0          Latte  2024  
-    1  Hot Chocolate  2024  
-    2  Hot Chocolate  2024  
-    3      Americano  2024  
-    4          Latte  2024  
+         coffee_name month  year  
+    0          Latte   Mar  2024  
+    1  Hot Chocolate   Mar  2024  
+    2  Hot Chocolate   Mar  2024  
+    3      Americano   Mar  2024  
+    4          Latte   Mar  2024  
 
 
 
@@ -209,6 +175,9 @@ stacked_data.plot(
     figsize=(10, 6)
 )
 
+plt.title('Sales by Coffee Type Across Years')
+plt.xlabel('Year')
+plt.ylabel('Total Sales')
 plt.show()
 ```
 
@@ -249,12 +218,12 @@ plt.show()
     3 2024-03-01  2024-03-01 13:46:33.006      card  ANON-0000-0000-0003   28.9   
     4 2024-03-01  2024-03-01 13:48:14.626      card  ANON-0000-0000-0004   38.7   
     
-         coffee_name  year  
-    0          Latte  2024  
-    1  Hot Chocolate  2024  
-    2  Hot Chocolate  2024  
-    3      Americano  2024  
-    4          Latte  2024  
+         coffee_name month  year  
+    0          Latte   Mar  2024  
+    1  Hot Chocolate   Mar  2024  
+    2  Hot Chocolate   Mar  2024  
+    3      Americano   Mar  2024  
+    4          Latte   Mar  2024  
 
 
 
@@ -284,3 +253,22 @@ plt.show()
 ![png](README11_files/README11_15_0.png)
     
 
+
+## How to Run
+
+1. Install Python 3.x and Jupyter Notebook.
+
+2. Install required libraries:
+   pip install pandas matplotlib
+
+3. Place the dataset file (sales.csv) in the same directory as the notebook.
+
+4. Start Jupyter Notebook:
+   jupyter notebook
+
+5. Open assignment-11.ipynb.
+
+6. Run all cells from top to bottom using:
+   Cell → Run All
+
+7. The charts and outputs will be displayed within the notebook.

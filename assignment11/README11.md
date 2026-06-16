@@ -1,3 +1,45 @@
+```
+Coffee Sales Data Visualization
+Project Overview
+
+This project analyzes coffee shop sales data using Python, Pandas, and Matplotlib. Various visualization techniques are used to understand sales patterns, customer preferences, and revenue distribution across different coffee types.
+
+Visualizations Included
+Line/Bar Plot – Number of orders by coffee type
+Scatter Plot – Total sales by coffee type
+Bar Charts – Vertical and horizontal sales comparisons
+Multiple Bar Plot – Coffee sales comparison by year
+Stacked Bar Chart – Revenue contribution by coffee type across years
+Histogram – Distribution of sales amounts
+Pie Chart – Revenue share by coffee type
+
+
+Dataset
+
+The project uses a CSV file named:
+
+sales.csv
+
+Expected columns:
+
+Column Name	Description
+date	Order date
+datetime	Order timestamp
+cash_type	Payment method
+card	Customer card ID
+money	Sale amount
+coffee_name	Coffee type
+
+Requirements
+
+Install the required Python libraries:
+
+pip install pandas matplotlib
+
+Run Jupyter Notebook
+jupyter notebook
+```
+
 ## Task 1:Line plot
 
 
@@ -8,26 +50,16 @@ import matplotlib.pyplot as plt
 
 
 ```python
-sales['date'] = pd.to_datetime(sales['date'])
+sales=pd.read_csv('sales.csv') # read csv file
+sales=pd.DataFrame(sales) # change into datafram
+sales.head()
+#sales.describe()
+order_count = sales['coffee_name'].value_counts() # count by name
 
-monthly_sales = sales.groupby(
-    sales['date'].dt.to_period('M')
-)['money'].sum()
-
-plt.figure(figsize=(10,5))
-
-plt.plot(
-    monthly_sales.index.astype(str),
-    monthly_sales.values,
-    marker='o'
-)
-
-plt.title('Monthly Sales Trend')
-plt.xlabel('Month')
-plt.ylabel('Total Sales')
-plt.xticks(rotation=45)
-plt.grid(True)
-
+order_count.plot(kind='bar')
+plt.title('Number of Orders by Coffee Type')
+plt.xlabel('Coffee Name')
+plt.ylabel('Orders')
 plt.show()
 ```
 
@@ -48,7 +80,7 @@ plt.figure(figsize=(8,5))
 plt.scatter(
     coffee_sales.index,
     coffee_sales.values
-)
+)  # scatter chart
 
 plt.title('Total Sales by Coffee Type')
 plt.xlabel('Coffee Name')
@@ -70,18 +102,10 @@ plt.show()
 ```python
 coffee_sales = sales.groupby('coffee_name')['money'].sum()
 
-plt.figure(figsize=(8,5))
-
-plt.scatter(
-    coffee_sales.index,
-    coffee_sales.values
-)
-
-plt.title('Total Sales by Coffee Type')
+coffee_sales.plot(kind='bar')   # vertical bar chart
+plt.title('Sales  Coffee Type')
 plt.xlabel('Coffee Name')
-plt.ylabel('Total Sales')
-plt.xticks(rotation=90)
-
+plt.ylabel('Money')
 plt.show()
 ```
 
@@ -99,7 +123,7 @@ plt.barh(
     coffee_sales.index,
     coffee_sales.values
 )
-
+# horizontal bar chart
 plt.title('Sales by Coffee Type')
 plt.xlabel('Money')
 plt.ylabel('Coffee Name')
@@ -117,47 +141,51 @@ plt.show()
 
 
 ```python
-sales['year'] = sales['date'].dt.year
+sales['date'] = pd.to_datetime(sales['date'])
 
+# Extract year
+sales['year'] = sales['date'].dt.year
+print(sales.head())
+# Create pivot table
 yearly_sales = sales.pivot_table(
     index='coffee_name',
     columns='year',
     values='money',
-    aggfunc='sum',
-    fill_value=0
+    aggfunc='sum'
 )
 
-years = yearly_sales.columns
-x = range(len(yearly_sales.index))
-
-bar_width = 0.25
-
-plt.figure(figsize=(10,6))
-
-for i, year in enumerate(years):
-    plt.bar(
-        [p + i*bar_width for p in x],
-        yearly_sales[year],
-        width=bar_width,
-        label=str(year)
-    )
+# Multi-bar chart
+yearly_sales.plot(
+    kind='bar',
+    figsize=(10, 6)
+)
 
 plt.title('Coffee Sales by Year')
-plt.xlabel('Coffee Type')
+plt.xlabel('Coffee Name')
 plt.ylabel('Total Sales')
-plt.xticks(
-    [p + bar_width for p in x],
-    yearly_sales.index,
-    rotation=45
-)
-plt.legend()
-
+plt.xticks(rotation=45)
+plt.legend(title='Year')
 plt.show()
 ```
 
+            date                 datetime cash_type                 card  money  \
+    0 2024-03-01  2024-03-01 10:15:50.520      card  ANON-0000-0000-0001   38.7   
+    1 2024-03-01  2024-03-01 12:19:22.539      card  ANON-0000-0000-0002   38.7   
+    2 2024-03-01  2024-03-01 12:20:18.089      card  ANON-0000-0000-0002   38.7   
+    3 2024-03-01  2024-03-01 13:46:33.006      card  ANON-0000-0000-0003   28.9   
+    4 2024-03-01  2024-03-01 13:48:14.626      card  ANON-0000-0000-0004   38.7   
+    
+         coffee_name  year  
+    0          Latte  2024  
+    1  Hot Chocolate  2024  
+    2  Hot Chocolate  2024  
+    3      Americano  2024  
+    4          Latte  2024  
+
+
 
     
-![png](README11_files/README11_9_0.png)
+![png](README11_files/README11_9_1.png)
     
 
 
@@ -173,34 +201,31 @@ stacked_data = sales.pivot_table(
     fill_value=0
 )
 
-plt.figure(figsize=(10,6))
+print(stacked_data.head())
 
-bottom = [0] * len(stacked_data)
-
-for coffee in stacked_data.columns:
-    plt.bar(
-        stacked_data.index,
-        stacked_data[coffee],
-        bottom=bottom,
-        label=coffee
-    )
-
-    bottom = [
-        bottom[i] + stacked_data[coffee].iloc[i]
-        for i in range(len(bottom))
-    ]
-
-plt.title('Year-wise Coffee Sales')
-plt.xlabel('Year')
-plt.ylabel('Sales')
-plt.legend(title='Coffee Type')
+stacked_data.plot(
+    kind='bar',
+    stacked=True,
+    figsize=(10, 6)
+)
 
 plt.show()
 ```
 
+    coffee_name  Americano  Americano with Milk  Cappuccino    Cocoa  Cortado  \
+    year                                                                        
+    2024           8728.02             19436.58    13671.42  5102.16  6652.22   
+    2025           6334.24              5832.54     4362.72  3576.00   882.64   
+    
+    coffee_name  Espresso  Hot Chocolate     Latte  
+    year                                            
+    2024          2140.36        7669.26  22430.78  
+    2025           673.92        2503.20   5435.52  
+
+
 
     
-![png](README11_files/README11_11_0.png)
+![png](README11_files/README11_11_1.png)
     
 
 
@@ -208,13 +233,8 @@ plt.show()
 
 
 ```python
-plt.figure(figsize=(8,5))
-
-plt.hist(
-    sales['money'],
-    bins=10
-)
-
+plt.hist(sales['money'], bins=10)
+print(sales.head())
 plt.title('Distribution of Sales Amount')
 plt.xlabel('Amount')
 plt.ylabel('Frequency')
@@ -222,9 +242,24 @@ plt.ylabel('Frequency')
 plt.show()
 ```
 
+            date                 datetime cash_type                 card  money  \
+    0 2024-03-01  2024-03-01 10:15:50.520      card  ANON-0000-0000-0001   38.7   
+    1 2024-03-01  2024-03-01 12:19:22.539      card  ANON-0000-0000-0002   38.7   
+    2 2024-03-01  2024-03-01 12:20:18.089      card  ANON-0000-0000-0002   38.7   
+    3 2024-03-01  2024-03-01 13:46:33.006      card  ANON-0000-0000-0003   28.9   
+    4 2024-03-01  2024-03-01 13:48:14.626      card  ANON-0000-0000-0004   38.7   
+    
+         coffee_name  year  
+    0          Latte  2024  
+    1  Hot Chocolate  2024  
+    2  Hot Chocolate  2024  
+    3      Americano  2024  
+    4          Latte  2024  
+
+
 
     
-![png](README11_files/README11_13_0.png)
+![png](README11_files/README11_13_1.png)
     
 
 
@@ -234,16 +269,13 @@ plt.show()
 ```python
 coffee_sales = sales.groupby('coffee_name')['money'].sum()
 
-plt.figure(figsize=(8,8))
-
-plt.pie(
-    coffee_sales.values,
-    labels=coffee_sales.index,
-    autopct='%1.1f%%'
+coffee_sales.plot(
+    kind='pie',
+    autopct='%1.1f%%',
+    
 )
 
 plt.title('Revenue Share by Coffee Type')
-
 plt.show()
 ```
 
